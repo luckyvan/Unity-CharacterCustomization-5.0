@@ -28,7 +28,9 @@ public class CreateAssetBundle{
 
 				GameObject fbx = (GameObject)obj;
 				string name = fbx.name.ToLower ();
+
 				CreateCharacterBaseAssetBundle (fbx, name);
+				CreatePartAssetBundles (fbx, name);
 				createBundle = true;				
 			}
 		}
@@ -39,6 +41,7 @@ public class CreateAssetBundle{
 				"Can not generate AssetBundle. Please select \"Character\" folder or its subfolder in \"Project\" view to generate bundle", "OK");
 			return;
 		}
+
 	}
 
 	static void CreateCharacterBaseAssetBundle (GameObject fbx, string name)
@@ -66,13 +69,76 @@ public class CreateAssetBundle{
 		clone.AddComponent<SkinnedMeshRenderer>();
 
 		//Prefab
-		string prefabPath = "Assets/" + name + ".prefab";
-		Object tempPrefab = PrefabUtility.CreateEmptyPrefab (prefabPath);
-		tempPrefab = PrefabUtility.ReplacePrefab (clone, tempPrefab);
+		Object tempPrefab = CreatePrefab (clone, name);
 		// clean cloned ojbect, In Editor mode, can use DestroyImmediate only.
 		Object.DestroyImmediate (clone);
 
 		BuildPipeline.BuildAssetBundle (tempPrefab, null, AssetBundlePath+bundleName, BuildAssetBundleOptions.CollectDependencies);//, BuildAssetBundleOptions.CollectDependencies is always enabled in 5.0
 		AssetDatabase.DeleteAsset (AssetDatabase.GetAssetPath (tempPrefab));//clean temp prefab file, why not use File.delete????s
 	}
+
+	static Object CreatePrefab (GameObject obj, string name){
+		string prefabPath = "Assets/" + name + ".prefab";
+		Object tempPrefab = PrefabUtility.CreateEmptyPrefab (prefabPath);
+		tempPrefab = PrefabUtility.ReplacePrefab (obj, tempPrefab);
+		return tempPrefab;
+	}
+
+	static void CreatePartAssetBundles (GameObject fbx, string name)
+	{
+		List<Material> materials = EditorHelpers.CollectAll<Material>(MeterialsPath(fbx));
+
+		foreach (var skinnedMeshRender in fbx.GetComponentsInChildren<SkinnedMeshRenderer>(true)) { // get all children with SkinnedMeshRender, even they are disabled
+			List<Object> assets = new List<Object>();
+
+			//Prefab for children with skinnedMeshRender
+			GameObject rendererClone = (GameObject)PrefabUtility.InstantiatePrefab (skinnedMeshRender.gameObject);
+			//delete cloned parent object by side effect
+			GameObject rendererCloneParent = rendererClone.transform.parent.gameObject;
+			rendererClone.transform.parent = null; 
+			Object.DestroyImmediate (rendererCloneParent);
+
+			//create prefab
+			Object rendererPrefab = CreatePrefab (rendererClone, "rendererobject");
+			Object.DestroyImmediate (rendererClone);
+
+			assets.Add (rendererPrefab);
+
+			//Materials
+			foreach (var material in materials) {
+				if (material.name.Contains (skinnedMeshRender.name.ToLower ())) {
+					assets.Add (material);
+				}
+			}
+
+			//Bones
+			List<string> boneNames = new List<string>();
+			foreach (var transform in skinnedMeshRender.bones) {//???
+				boneNames.Add (transform.name);
+			}
+			string boneNameAssetPath = "Assets/bonenames.asset";
+			StringHolder holder = ScriptableObject.CreateInstance <StringHolder>();
+			holder.content = boneNames.ToArray ();
+			AssetDatabase.CreateAsset (holder, boneNameAssetPath);
+			
+			// Create bone asset
+			Object boneAsset = AssetDatabase.LoadAssetAtPath (boneNameAssetPath, typeof(StringHolder));
+			assets.Add (boneAsset);
+
+			//Create bundl by assets
+			string bundlePath = AssetBundlePath + name + "_" + skinnedMeshRender.name.ToLower () + ".assetbundle";
+			BuildPipeline.BuildAssetBundle (null, assets.ToArray (), bundlePath);
+
+			//Cleanup
+			AssetDatabase.DeleteAsset (AssetDatabase.GetAssetPath (rendererPrefab));
+			AssetDatabase.DeleteAsset (boneNameAssetPath);
+		}
+	}
+
+	static string MeterialsPath (GameObject fbx)
+	{
+		string root = AssetDatabase.GetAssetPath(fbx);
+		return root.Substring (0, root.LastIndexOf ("/") + 1)
+				+ "Per Texture Materials";
+ 	}
 }
