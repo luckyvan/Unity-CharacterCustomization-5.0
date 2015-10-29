@@ -42,6 +42,8 @@ public class CreateAssetBundle{
 			return;
 		}
 
+		CreateElementDataBaseBundle();
+
 	}
 
 	static void CreateCharacterBaseAssetBundle (GameObject fbx, string name)
@@ -141,4 +143,35 @@ public class CreateAssetBundle{
 		return root.Substring (0, root.LastIndexOf ("/") + 1)
 				+ "Per Texture Materials";
  	}
+
+	static void CreateElementDataBaseBundle ()
+	{
+		List<CharacterElement> characterElements = new List<CharacterElement>();
+
+		//create map material -> bundle
+		string[] assetBundles = Directory.GetFiles (AssetBundlePath);
+		string[] materials = Directory.GetFiles ("Assets/CharacterCustomization/characters", "*.mat", SearchOption.AllDirectories); //search materials recursively
+		foreach (var material in materials) {
+			foreach (var bundle in assetBundles) {
+				FileInfo bundleFI = new FileInfo(bundle);
+				FileInfo materialFI = new FileInfo(material);
+				string bundleName = bundleFI.Name.Replace (".assetbundle", "");
+
+				if (!materialFI.Name.StartsWith (bundleName) ||
+				    !material.Contains ("Per Texture Materials")) {
+					continue;
+				}
+
+				characterElements.Add (new CharacterElement(materialFI.Name.Replace (".mat", ""), bundleName));
+				break;
+			}
+		}
+
+		CharacterElementHolder holder = ScriptableObject.CreateInstance <CharacterElementHolder>();
+		holder.content = characterElements;
+		string path = "Assets/CharacterElementsDatabase.asset";
+		AssetDatabase.CreateAsset (holder, path);
+		Object asset = AssetDatabase.LoadAssetAtPath (path, typeof(CharacterElementHolder));
+		BuildPipeline.BuildAssetBundle (asset, null, AssetBundlePath + "CharacterElementDatabase.assetbundle");
+	}
 }
