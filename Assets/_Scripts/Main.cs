@@ -65,4 +65,58 @@ public class Main : MonoBehaviour {
 			nonLoopingAnimationToPlay = null;
 		}
 	}
+
+	void ChangeCharacter (bool next){
+		generator.ChangeCharacter (next);
+		usingLatestConfig = false;
+		newCharacterRequested = true;
+
+	}
+
+	void ChangeElement (string category, bool next, string anim){
+		generator.ChangeElement (category,next);
+		usingLatestConfig = false;
+		if (!character.GetComponent<Animation>().IsPlaying (anim)) {
+			nonLoopingAnimationToPlay = anim;
+		}
+	}
+
+	void AddCategory(string category, string displayName, string anim){
+		GUILayout.BeginHorizontal ();
+		if (GUILayout.Button ("<", GUILayout.Width (buttonWideth))) {
+			ChangeElement (category, false, anim);
+		}
+		GUILayout.Box (displayName, GUILayout.Width (typeWidth));
+		if (GUILayout.Button (">", GUILayout.Width (buttonWideth))){
+			ChangeElement (category, true, anim);
+		}
+		GUILayout.EndHorizontal ();
+	}
+
+	void OnGUI(){
+		if (generator == null) {
+			return;
+		}
+		GUI.enabled = usingLatestConfig&&!character.GetComponent<Animation>().IsPlaying ("walkin");
+		GUILayout.BeginArea (new Rect(10, 10, typeWidth + 2*buttonWideth + 8, 500));
+		// change character
+		GUILayout.BeginHorizontal ();
+		if (GUILayout.Button ("<", GUILayout.Width (buttonWideth))) {
+			ChangeCharacter (false);
+		}
+		GUILayout.Box ("Character", GUILayout.Width (typeWidth));
+		if (GUILayout.Button (">", GUILayout.Width (buttonWideth))){
+			ChangeCharacter (true);
+		}
+		GUILayout.EndHorizontal ();
+
+		// category
+		AddCategory ("face", "face", null);	
+		AddCategory ("hair", "hair", null);	
+		AddCategory ("eyes", "eyes", null);	
+		AddCategory ("top", "top", null);	
+		AddCategory ("pants", "pants", null);	
+		AddCategory ("shoes", "shoes", null);	
+		GUILayout.EndArea ();
+	}
 }
