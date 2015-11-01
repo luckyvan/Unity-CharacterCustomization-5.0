@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
+[Serializable]
 public class CharacterElement{
 	public static string AssetBundleBaseURL {
 		get{
@@ -53,7 +55,7 @@ public class CharacterElement{
 
 	public SkinnedMeshRenderer GetSkinnedMeshRenderer ()
 	{
-		GameObject obj = (GameObject)Object.Instantiate (gameObjectRequest.asset);
+		GameObject obj = (GameObject)UnityEngine.Object.Instantiate (gameObjectRequest.asset);
 		obj.GetComponent<Renderer>().material = (Material)materialRequest.asset;
 		return (SkinnedMeshRenderer)obj.GetComponent<Renderer>();
 	}
