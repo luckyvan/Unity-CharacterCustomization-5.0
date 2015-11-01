@@ -169,7 +169,7 @@ public class CreateAssetBundle{
 
 		CharacterElementHolder holder = ScriptableObject.CreateInstance <CharacterElementHolder>();
 		holder.content = characterElements;
-		string path = "Assets/CharacterElementsDatabase.asset";
+		string path = "Assets/CharacterElementDatabase.asset";
 		AssetDatabase.CreateAsset (holder, path);
 		Object asset = AssetDatabase.LoadAssetAtPath (path, typeof(CharacterElementHolder));
 		BuildPipeline.BuildAssetBundle (asset, null, AssetBundlePath + "CharacterElementDatabase.assetbundle");
