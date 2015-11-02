@@ -24,7 +24,7 @@ public class CharacterElement{
 			}
 
 			if (boneNamesRequest == null) {
-				boneNamesRequest = WWW.assetBundle.LoadAssetAsync ("bonenames", typeof(Material));
+				boneNamesRequest = WWW.assetBundle.LoadAssetAsync ("bonenames", typeof(StringHolder));
 			}
 
 			return gameObjectRequest.isDone && materialRequest.isDone && boneNamesRequest.isDone;
