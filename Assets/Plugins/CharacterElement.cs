@@ -8,7 +8,9 @@ public class CharacterElement{
 	public static string AssetPostfix = ".asset";
 	public static string BundlePostfix = ".assetbundle";
 	public static string DataBaseName = "CharacterElementDatabase";
-	
+
+	public static string PartAssetGameObjectName = "rendererobject";
+	public static string PartAssetBonenames = "bonenames";
 	public static string BundleFileName(string name){
 		return name + BundlePostfix;
 	}
@@ -33,7 +35,7 @@ public class CharacterElement{
 				return false;
 			}
 			if (gameObjectRequest == null) {
-				gameObjectRequest = WWW.assetBundle.LoadAssetAsync ("rendererobject", typeof(GameObject));
+				gameObjectRequest = WWW.assetBundle.LoadAssetAsync (PartAssetGameObjectName, typeof(GameObject));
 			}
 
 			if (materialRequest == null) {
@@ -41,7 +43,7 @@ public class CharacterElement{
 			}
 
 			if (boneNamesRequest == null) {
-				boneNamesRequest = WWW.assetBundle.LoadAssetAsync ("bonenames", typeof(StringHolder));
+				boneNamesRequest = WWW.assetBundle.LoadAssetAsync (PartAssetBonenames, typeof(StringHolder));
 			}
 
 			return gameObjectRequest.isDone && materialRequest.isDone && boneNamesRequest.isDone;

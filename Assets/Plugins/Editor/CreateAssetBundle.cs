@@ -88,6 +88,18 @@ public class CreateAssetBundle{
 		return tempPrefab;
 	}
 
+	//CreatePartAssetBundle
+	//Example: 
+	//    bundle: female_face-1.assetbundle
+	//        - a: GameObject
+	//            name: PartAssetGameObjectName(renderobject),
+	//            type: GameObject(as Prefab)
+	//        - a: Materials
+	//            name: material name
+	//            type: material
+	//        - a: Bones
+	//            name: PartAssetBonesName(bonesname)
+	//            type: StringHolder
 	static void CreatePartAssetBundles (GameObject fbx, string name)
 	{
 		List<Material> materials = EditorHelpers.CollectAll<Material>(MeterialsPath(fbx));
@@ -102,8 +114,8 @@ public class CreateAssetBundle{
 			rendererClone.transform.parent = null; 
 			Object.DestroyImmediate (rendererCloneParent);
 
-			//create prefab
-			Object rendererPrefab = CreatePrefab (rendererClone, "rendererobject");
+			//create prefab for GameObject
+			Object rendererPrefab = CreatePrefab (rendererClone, CharacterElement.PartAssetGameObjectName);
 			Object.DestroyImmediate (rendererClone);
 
 			assets.Add (rendererPrefab);
@@ -120,7 +132,7 @@ public class CreateAssetBundle{
 			foreach (var transform in skinnedMeshRender.bones) {//???
 				boneNames.Add (transform.name);
 			}
-			string boneNameAssetPath = "Assets/bonenames.asset";
+			string boneNameAssetPath = AssetPath + CharacterElement.AssetFileName(CharacterElement.PartAssetBonenames);
 			StringHolder holder = ScriptableObject.CreateInstance <StringHolder>();
 			holder.content = boneNames.ToArray ();
 			AssetDatabase.CreateAsset (holder, boneNameAssetPath);
@@ -146,11 +158,12 @@ public class CreateAssetBundle{
 				+ "Per Texture Materials";
  	}
 
+	//create map material name -> bundle
+	//example: female_face-1 --> female_face-1.assetbundle
 	static void CreateElementDataBaseBundle ()
 	{
 		List<CharacterElement> characterElements = new List<CharacterElement>();
 
-		//create map material -> bundle
 		string[] assetBundles = Directory.GetFiles (AssetBundlePath);
 		string[] materials = Directory.GetFiles ("Assets/CharacterCustomization/characters", "*.mat", SearchOption.AllDirectories); //search materials recursively
 		foreach (var material in materials) {
@@ -164,7 +177,8 @@ public class CreateAssetBundle{
 					continue;
 				}
 
-				characterElements.Add (new CharacterElement(materialFI.Name.Replace (".mat", ""), bundleName));
+				string name = materialFI.Name.Replace (".mat", "");
+				characterElements.Add (new CharacterElement(name, bundleName));
 				break;
 			}
 		}
