@@ -71,7 +71,7 @@ public class CreateAssetBundle{
 		clone.AddComponent<SkinnedMeshRenderer>();
 
 		//Prefab
-		Object tempPrefab = CreatePrefab (clone, name);
+		Object tempPrefab = CreatePrefab (clone, "characterbase");
 		// clean cloned ojbect, In Editor mode, can use DestroyImmediate only.
 		Object.DestroyImmediate (clone);
 
