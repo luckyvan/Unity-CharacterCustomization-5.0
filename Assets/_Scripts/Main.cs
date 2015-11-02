@@ -19,7 +19,7 @@ public class Main : MonoBehaviour {
 		if (PlayerPrefs.HasKey(prefName)) {
 			generator = CharacterGenerator.CreateWithConfig (PlayerPrefs.GetString (prefName));
 		}else{
-			generator = CharacterGenerator.CreateWithRandomConfig ("Female");
+			generator = CharacterGenerator.CreateWithRandomConfig ("female");
 		}
 	}
 	
