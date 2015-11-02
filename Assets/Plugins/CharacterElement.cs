@@ -34,7 +34,7 @@ public class CharacterElement{
 	public WWW WWW{
 		get{
 			if (!wwws.ContainsKey (bundleName)) {
-				wwws.Add(bundleName, new WWW(AssetBundleBaseURL + bundleName));
+				wwws.Add(bundleName, new WWW(AssetBundleBaseURL + bundleName + ".assetbundle"));
 			}
 			return wwws[bundleName];
 		}
