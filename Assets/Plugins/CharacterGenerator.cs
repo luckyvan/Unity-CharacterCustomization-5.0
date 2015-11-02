@@ -18,6 +18,7 @@ public class CharacterGenerator {
 			AssetBundleRequest> characterBaseRequests = new Dictionary<string, AssetBundleRequest>();
 
 	string currentCharacter;
+	//category --> CharacterElement
 	Dictionary<string, CharacterElement> currentConfiguration = new Dictionary<string, CharacterElement>();
 
 	float assetBundlesAlreadyDownloaded;
@@ -89,6 +90,7 @@ public class CharacterGenerator {
 			sortedElements = new Dictionary<string, Dictionary<string, List<CharacterElement>>>();
 			foreach (var characterElement in holder.content) {
 				//name: female_face-1.assetbundle
+				// female --> ( face --> female_face-1.asset.bundle)
 				string[] array = characterElement.name.Split ('_');
 				string character = array[0]; //female
 				string category = array[1].Split ('-')[0].Replace(".assetbundle", ""); // face
