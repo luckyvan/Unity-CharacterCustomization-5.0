@@ -71,7 +71,7 @@ public class CharacterGenerator {
 	public static bool ReadyToUse{
 		get	{
 			if (database == null) {
-				database = new WWW(CharacterElement.AssetBundleBaseURL + "CharacterElementDatabase.assetbundle");
+				database = new WWW(CharacterElement.AssetBundleURL(CharacterElement.DataBaseName));
 			}
 			if (sortedElements != null) {
 				return true;

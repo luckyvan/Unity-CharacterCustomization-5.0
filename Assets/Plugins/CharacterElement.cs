@@ -4,10 +4,27 @@ using System;
 
 [Serializable]
 public class CharacterElement{
+
+	public static string AssetPostfix = ".asset";
+	public static string BundlePostfix = ".assetbundle";
+	public static string DataBaseName = "CharacterElementDatabase";
+	
+	public static string BundleFileName(string name){
+		return name + BundlePostfix;
+	}
+	
+	public static string AssetFileName(string name){
+		return name + AssetPostfix;
+	}
+
 	public static string AssetBundleBaseURL {
 		get{
 			return "file://" + Application.dataPath + "/assetbundles/";
 		}
+	}
+
+	public static string AssetBundleURL(string name){
+		return AssetBundleBaseURL + BundleFileName(name);
 	}
 
 	public bool IsLoaded {

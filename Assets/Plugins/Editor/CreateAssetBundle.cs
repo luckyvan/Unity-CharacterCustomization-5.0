@@ -5,7 +5,9 @@ using System.IO;
 using Object = UnityEngine.Object; // Not refer to C# Object again.
 
 public class CreateAssetBundle{
+	static string AssetPath = "Assets" + Path.DirectorySeparatorChar;
 	static string AssetBundlePath = "Assets" + Path.DirectorySeparatorChar + "AssetBundles" + Path.DirectorySeparatorChar;
+
 
 	[MenuItem("Character Generator/Create AssetBundles")] // restart the Editor can see it
 	static void Execute (){
@@ -155,7 +157,7 @@ public class CreateAssetBundle{
 			foreach (var bundle in assetBundles) {
 				FileInfo bundleFI = new FileInfo(bundle);
 				FileInfo materialFI = new FileInfo(material);
-				string bundleName = bundleFI.Name.Replace (".assetbundle", "");
+				string bundleName = bundleFI.Name.Replace (CharacterElement.BundlePostfix, "");
 
 				if (!materialFI.Name.StartsWith (bundleName) ||
 				    !material.Contains ("Per Texture Materials")) {
@@ -169,9 +171,9 @@ public class CreateAssetBundle{
 
 		CharacterElementHolder holder = ScriptableObject.CreateInstance <CharacterElementHolder>();
 		holder.content = characterElements;
-		string path = "Assets/CharacterElementDatabase.asset";
+		string path = AssetPath + CharacterElement.AssetFileName (CharacterElement.DataBaseName);
 		AssetDatabase.CreateAsset (holder, path);
 		Object asset = AssetDatabase.LoadAssetAtPath (path, typeof(CharacterElementHolder));
-		BuildPipeline.BuildAssetBundle (asset, null, AssetBundlePath + "CharacterElementDatabase.assetbundle");
+		BuildPipeline.BuildAssetBundle (asset, null, AssetBundlePath + CharacterElement.BundleFileName (CharacterElement.DataBaseName));
 	}
 }
